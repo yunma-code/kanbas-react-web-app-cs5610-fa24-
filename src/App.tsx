@@ -4,6 +4,7 @@ import './App.css';
 import Labs from './Labs';
 import Kanbas from "./Kanbas";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import KanbasNavigation from './Kanbas/Navigation';
 
 function App() {
   return (
