@@ -12,10 +12,16 @@ import Float from "./Float";
 import GridLayout from "./GridLayout";
 import Flex from "./Flex";
 import ReactIcons from "./ReactIcons";
+import BootstrapGrids from "./BootstrapGrids";
+import ScreenSizeLabel from "./ScreenSizeLabel";
+import BootstrapTables from "./BootstrapTables";
+import BootstrapLists from "./BootstrapLists";
+import BootstrapForms from "./BootstrapForms";
+import BootsttrapNavigation from "./BootstrapNavigation";
 
 export default function Lab2() {
 	return(
-		<div id="wd-lab2">
+		<div id= "wd-lab2" className="container">
 			<h2>Lab 2 - Cascading Style Sheets</h2>
 			<h3>Styling with the STYLE attributes</h3>
 			<p>
@@ -71,6 +77,9 @@ export default function Lab2() {
 			<Borders /><Padding /> <Margins /> <Corners />
 			<Dimensions /> <Positions /> <Zindex /> <Float /> 
 			<GridLayout /> <Flex /> <ReactIcons />
+			<BootstrapGrids /> <ScreenSizeLabel />
+			<BootstrapTables /> <BootstrapLists />
+			<BootstrapForms /> <BootsttrapNavigation />
 		
 
 			</div>	
