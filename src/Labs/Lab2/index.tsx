@@ -18,6 +18,7 @@ import BootstrapTables from "./BootstrapTables";
 import BootstrapLists from "./BootstrapLists";
 import BootstrapForms from "./BootstrapForms";
 import BootsttrapNavigation from "./BootstrapNavigation";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 export default function Lab2() {
 	return(

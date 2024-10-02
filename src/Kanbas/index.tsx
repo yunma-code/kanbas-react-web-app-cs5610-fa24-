@@ -4,6 +4,8 @@ import Dashboard from "./Dashboard";
 import KanbasNavigation from "./Navigation";
 import Courses from "./Courses";
 import CourseStatus from "./Courses/Home/Status";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 import "./styles.css";
 
 export default function kanbas() {

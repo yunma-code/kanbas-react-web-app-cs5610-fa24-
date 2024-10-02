@@ -1,5 +1,5 @@
 import React from "react";
-import "./index.css";
+import "./styles.css";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -9,7 +9,7 @@ import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 const KanbasNavigation: React.FC = () => {
   const location = useLocation();
 
-  // Function to determine if the current link is active
+  // set curr link as active
   const isActive = (path: string): boolean => {
     return location.pathname.startsWith(path);
   };
