@@ -32,6 +32,7 @@ body * {  font-family: Arial, Helvetica, sans-serif;  }
 .bg-secondary {
   --bs-secondary-rgb: 199, 205, 209;
 }
+
 .list-group-item {
   --bs-list-group-border-color: gray;
 }
@@ -39,3 +40,24 @@ body * {  font-family: Arial, Helvetica, sans-serif;  }
   border-left: 3px solid green !important;
 }
 
+.bg-assignment {
+  background-color: #ebebeb;
+  color: black;
+}
+
+.rounded-btn {
+  background-color: #ebebeb;
+  border-radius: 50px; 
+  padding: 7px 20px;
+  border: 1px solid black;
+  color: black;
+}
+
+.border-gray {
+  border: 1px solid gray;
+}
+
+.btn-save {
+  background-color: red;
+  color: white;
+}
