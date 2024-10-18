@@ -8,11 +8,20 @@ import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 
 const KanbasNavigation: React.FC = () => {
   const location = useLocation();
-
   // set curr link as active
   const isActive = (path: string): boolean => {
     return location.pathname.startsWith(path);
   };
+
+  // use data structure to configures the components
+  const { pathname } = useLocation();
+  const links = [
+    { label: "Dashboard", path: "/Kanbas/Dashboard", icon: AiOutlineDashboard },
+    { label: "Courses",   path: "/Kanbas/Dashboard", icon: LiaBookSolid },
+    { label: "Calendar",  path: "/Kanbas/Calendar",  icon: IoCalendarOutline },
+    { label: "Inbox",     path: "/Kanbas/Inbox",     icon: FaInbox },
+    { label: "Labs",      path: "/Labs",             icon: LiaCogSolid },
+  ];
 
   return (
     <div
@@ -29,16 +38,23 @@ const KanbasNavigation: React.FC = () => {
       >
         <img src="/images/NEU.png" width="75px" alt="NEU Logo" />
       </a>
-      <Link
-        to="/Kanbas/Account"
-        id="wd-account-link"
-        className={`list-group-item text-center border-0 ${
-          isActive('/Kanbas/Account') ? 'active' : 'bg-black text-white'
-        }`}
-      >
-        <FaRegCircleUser className="fs-1" /><br />
+
+      <Link to="/Kanbas/Account" className={`list-group-item text-center border-0 bg-black
+            ${pathname.includes("Account") ? "bg-white text-danger" : "bg-black text-white"}`}>
+        <FaRegCircleUser className={`fs-1 ${pathname.includes("Account") ? "text-danger" : "text-white"}`} />
+        <br />
         Account
       </Link>
+      {links.map((link) => (
+        <Link key={link.path} to={link.path} className={`list-group-item bg-black text-center border-0
+              ${pathname.includes(link.label) ? "text-danger bg-white" : "text-white bg-black"}`}>
+          {link.icon({ className: "fs-1 text-danger"})}
+          <br />
+          {link.label}
+        </Link>
+      ))}
+
+{/* 
       <Link
         to="/Kanbas/Dashboard"
         id="wd-dashboard-link"
@@ -88,7 +104,7 @@ const KanbasNavigation: React.FC = () => {
       >
         <LiaCogSolid className="fs-1" /><br />
         Labs
-      </Link>
+      </Link> */}
     </div>
   );
 };
