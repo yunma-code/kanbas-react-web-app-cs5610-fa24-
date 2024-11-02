@@ -10,7 +10,7 @@ import * as db from "../../Database";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = db.assignments;
+  const assignments = db.assignments.filter(assignment => assignment.course === cid);
   return (
     <div>
       <AssignmentControls />

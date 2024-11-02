@@ -5,9 +5,13 @@ import * as db from "../../Database";
 export default function AssignmentEditor() {
   const { assignmentId, cid } = useParams();
   const assignments = db.assignments;
+
+  const courseAssignments = assignments.filter((a) => a.course === cid);
+  const assignment = courseAssignments.find((a) => a._id === assignmentId);
+
   console.log("Params:", { assignmentId, cid });
   console.log("Assignments:", assignments);
-  const assignment = assignments.find((a) => a._id === assignmentId);
+  // const assignment = assignments.find((a) => a._id === assignmentId);
   if (!assignment) {
     return <div>Assignment not found.</div>; 
   }
