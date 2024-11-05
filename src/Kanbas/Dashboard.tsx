@@ -1,20 +1,30 @@
 import { Link } from "react-router-dom";
 import * as db from "./Database";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function Dashboard(
-  { courses, course, setCourse, addNewCourse,
-    deleteCourse, updateCourse }: {
+  { courses, course, setCourse, 
+    addNewCourse = () => {},
+    deleteCourse, updateCourse, userRole, }: {
     courses: any[]; course: any; setCourse: (course: any) => void;
-    addNewCourse: () => void; deleteCourse: (course: any) => void;
-    updateCourse: () => void; })
+    addNewCourse?: () => void; 
+    deleteCourse: (course: any) => void;
+    updateCourse: () => void;
+    userRole: string; })
   { 
+  
+  const { currentUser } = useSelector((state: any) => state.accountReducer );
+  const { enrollments } = db;
+  const isFaculty = userRole === "FACULTY";
 
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard</h1>
       <hr />
-      {/* add title and addNewCourse button */}
+      {isFaculty && (
+        <>
+        {/* add title and addNewCourse button */}
       <h5> New Course 
           <button className="btn btn-primary float-end"
             id="wd-add-new-course-click"
@@ -28,14 +38,25 @@ export default function Dashboard(
         onChange={(e) => setCourse({ ...course, name: e.target.value })} />
       <textarea value={course.description} className="form-control" 
         onChange={(e) => setCourse({ ...course, description: e.target.value })}/> 
-      <hr />
+        <hr />
+        </>
+        
+      )}
+      
 
       <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>
       <hr />
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
           {/* course component from db */}
-          {courses.map((course) => (
+          {courses
+            .filter((course) =>
+              enrollments.some(
+                (enrollment) =>
+                  enrollment.user === currentUser._id &&
+                  enrollment.course === course._id
+              ))
+          .map((course) => (
           <div className="wd-dashboard-course col" style={{ width: "300px" }} key="course1">
             <div className="card rounded-3 overflow-hidden">
               <Link to={`/Kanbas/Courses/${course._id}/Home`}
@@ -47,7 +68,11 @@ export default function Dashboard(
                       {course.description} </p>
                     {/* go button */}
                     <button className="btn btn-primary"> Go </button>
-                    {/* delete button */}
+
+                    {/* edit and delete only visible to faculty  */}
+                    {isFaculty && (
+                      <>
+                      {/* delete button */}
                     <button onClick={(event) => {
                       event.preventDefault();
                       deleteCourse(course._id);
@@ -63,6 +88,8 @@ export default function Dashboard(
                       }} className="btn btn-warning me-2 float-end" >
                       Edit 
                     </button>
+                      </>
+                    )}
                 </div>
               </Link>
             </div>

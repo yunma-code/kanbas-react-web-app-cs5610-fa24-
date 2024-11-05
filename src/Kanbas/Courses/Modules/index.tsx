@@ -12,8 +12,13 @@ export default function Modules() {
   // const [modules, setModules] = useState<any[]>(db.modules);
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: any) => state.modulesReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
 
+  // get user role
+  const user = db.users.find((user: any) => user.username === currentUser?.username);
+  const userRole = user ? user.role : null;
+  
   // const addModule = () => {
   //   setModules([ ...modules, { _id: new Date().getTime().toString(),
   //     name: moduleName, course: cid, lessons: [] }]);
@@ -56,25 +61,32 @@ export default function Modules() {
                 defaultValue={module.name}
               />
             )}
-            <ModuleControlButtons
-              moduleId={module._id}
-              deleteModule={(moduleId) => {
-                dispatch(deleteModule(moduleId));}}
-              editModule={(moduleId) => dispatch(editModule(module._id))}
-            />
+            {/* only faculty can see module control buttons */}
+            {userRole === "FACULTY" && (
+              <ModuleControlButtons
+                moduleId={module._id}
+                deleteModule={(moduleId) => {
+                  dispatch(deleteModule(moduleId));}}
+                editModule={(moduleId) => dispatch(editModule(module._id))}
+             />
+             )}
           </div>
           {module.lessons && (
             <ul className="wd-lessons list-group rounded-0">
               {module.lessons.map((lesson: any) => (
                 <li key={lesson._id} className="wd-lesson list-group-item p-3 ps-1">
                   <BsGripVertical className="me-2 fs-3" /> {lesson.name}
-                  <ModuleControlButtons
-                    moduleId={module._id}
-                    deleteModule={(moduleId) => {
-                      dispatch(deleteModule(moduleId));
-                    }}
-                    editModule={(moduleId) => dispatch(editModule(module._id))}
-                  /> </li>
+
+                  {/* only faculty can see module control buttons */}
+                  {userRole === "FACULTY" && (
+                    <ModuleControlButtons
+                      moduleId={module._id}
+                      deleteModule={(moduleId) => {
+                        dispatch(deleteModule(moduleId));
+                      }}
+                      editModule={(moduleId) => dispatch(editModule(module._id))}
+                  />  )}
+                  </li>
               ))}</ul>
           )}</li>
       ))} </ul> </div>
