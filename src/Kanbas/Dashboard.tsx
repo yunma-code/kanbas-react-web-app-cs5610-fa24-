@@ -39,13 +39,13 @@ export default function Dashboard(
       <textarea value={course.description} className="form-control" 
         onChange={(e) => setCourse({ ...course, description: e.target.value })}/> 
         <hr />
+      {/* Published course */}
+        <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>
+      <hr />
         </>
         
       )}
       
-
-      <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>
-      <hr />
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
           {/* course component from db */}
