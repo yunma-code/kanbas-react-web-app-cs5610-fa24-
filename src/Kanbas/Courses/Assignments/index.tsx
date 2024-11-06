@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { BsGripVertical } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
-import { FaCaretDown } from "react-icons/fa";
+import { FaCaretDown, FaTrash } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { GrDocument } from "react-icons/gr";
 import AssignmentControls from "./AssignmentControls";
@@ -14,32 +14,49 @@ import { addAssignment, deleteAssignment, updateAssignment } from "./reducer";
 
 export default function Assignments() {
   const { cid } = useParams();
+  const navigate = useNavigate(); 
   const dispatch = useDispatch();
-  const [assignmentTitle, setAssignmentTitle] = useState("");
+  
   // include reducer functions
   const assignments  = useSelector((state: any) => 
     state.assignmentsReducer.assignments.filter(
       (assignment: { course: string | undefined; }) => assignment.course === cid
     )
   );
-  
-  //const assignments = db.assignments.filter(assignment => assignment.course === cid);
+
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
 
   // user role
 	const { currentUser } = useSelector((state: any) => state.accountReducer);
-	const user = db.users.find((user: any) => user.username === currentUser?.username);
-	const userRole = user ? user.role : null;
-  const navigate = useNavigate(); 
+	// const user = db.users.find((user: any) => user.username === currentUser?.username);
+	// const userRole = user ? user.role : null;
+  const userRole = currentUser?.role;
 
   const handleAddAssignmentClick = () => {
     navigate(`/Kanbas/Courses/${cid}/Assignments/Editor/NewAssignment`); 
   };
+  const handleDeleteClick = (assignmentId: string) => {
+    setAssignmentToDelete(assignmentId);
+    setShowConfirmDialog(true);
+  };
 
+  const confirmDelete = () => {
+    if (assignmentToDelete) {
+      dispatch(deleteAssignment(assignmentToDelete));
+      setAssignmentToDelete(null);
+    }
+    setShowConfirmDialog(false);
+  };
+
+  const cancelDelete = () => {
+    setAssignmentToDelete(null);
+    setShowConfirmDialog(false);
+  };
+  
   return (
     <div>
-      { userRole === "FACULTY" && (
       <AssignmentControls />
-      )}
       <div className="mb-5" />
       <ul id="wd-assignments-title" className="list-group rounded-0">
         <li className="wd-assignments-title list-group-item p-0 mb-5 fs-5 border border-secondary">
@@ -51,22 +68,24 @@ export default function Assignments() {
               <button id="wd-title" className="btn me-1 rounded-btn">
                 40% of Total
               </button>
-              {/* add assignment button */}
-              <button id="wd-add-assignment"
-              style={{
-                background: "none", border: "none", padding: "0",
-                cursor: "pointer",
-              }} onClick={handleAddAssignmentClick}>
-              
-              <FaPlus/>
+              { userRole === "FACULTY" && (
+              <button
+                id="wd-add-assignment"
+                style={{
+                  background: "none", border: "none", padding: "0",
+                  cursor: "pointer",
+                }}
+                onClick={handleAddAssignmentClick}
+              >
+                <FaPlus />
               </button>
-              
+              )}
               <IoEllipsisVertical className="fs-4" style={{ marginLeft: "5px" }} />
             </div>
           </div>
 
           <ul className="wd-assignment-list list-group rounded-0">
-            {assignments.map((assignment: { _id: Key | null | undefined; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; }) => (
+            {assignments.map((assignment: { _id: Key | null | undefined; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; available_from_date: string | number | Date; dueDate: string | number | Date; points: any; }) => (
               <li key={assignment._id} className="wd-assignment-list-item list-group-item p-3 ps-1 wd-lesson d-flex align-items-center">
                 <div className="d-flex align-items-center me-2">
                   <BsGripVertical className="me-2 fs-3" />
@@ -84,26 +103,46 @@ export default function Assignments() {
                         Not Available until
                       </span>
                       <span className="text-muted" style={{ marginLeft: "10px" }}>
-                        May 6 at 12:00 am |
+                        {assignment.available_from_date ? new Date(assignment.available_from_date).toLocaleString() : "N/A"} 
                       </span>
                     </div>
                     <div className="d-flex align-items-center">
                       <span style={{ color: "#363636", fontWeight: "bold" }}>Due</span>
                       <span style={{ marginLeft: "10px" }} className="text-muted">
-                        May 13 at 11:59 pm | 100 pts
+                        {assignment.dueDate ? new Date(assignment.dueDate).toLocaleString() : "N/A"} | {assignment.points ? `${assignment.points} pts` : "N/A"}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="float-end ms-auto">
+                {userRole === "FACULTY" && (
+                  <>
                   <GreenCheckmark />
+                  <FaTrash
+                    style={{ marginLeft: "10px", cursor: "pointer", color: "red" }}
+                    onClick={() => handleDeleteClick(assignment._id as string)}
+                  />
                   <IoEllipsisVertical className="fs-4" />
+                  </>
+                )}
                 </div>
               </li>
             ))}
           </ul>
         </li>
       </ul>
+      {/* pop up window to confirm  */}
+      {userRole === "FACULTY" && (
+        <>
+      {showConfirmDialog && (
+        <div className="confirmation-dialog">
+          <p>Are you sure you want to delete this assignment?</p>
+          <button onClick={confirmDelete} className="btn btn-danger me-2">OK</button>
+          <button onClick={cancelDelete} className="btn btn-secondary">Cancel</button>
+        </div>
+      )}
+      </>     
+      )}
     </div>
   );
 }
