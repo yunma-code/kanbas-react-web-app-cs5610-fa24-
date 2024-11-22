@@ -47,6 +47,25 @@ export default function WorkingWithArrays() {
              onChange={(e) => setTodo({ ...todo, title: e.target.value }) }/>
       <br /><br /><hr />
 
+			{/* Edit description and completed checkbox */}
+			<h3>Edit description and completed</h3>
+			<a id="wd-update-todo-description" className="btn btn-primary float-end" href={`${API}/${todo.id}/description/:description`}>
+					Describe Todo with ID = {todo.id} </a>
+			<input defaultValue={todo.id} className="form-control w-25 float-start me-2"
+				onChange={(e) => setTodo({ ...todo, id: e.target.value })} />
+			<input defaultValue={todo.description} className="form-control w-50 float-start"
+				onChange={(e) => setTodo({ ...todo, description: e.target.value })} />
+
+			<br /><br /><hr />
+			<a id="wd-update-todo-completed" className="btn btn-primary float-end" href={`${API}/${todo.id}/compeleted/:completed`}>
+					Complete Todo with ID = {todo.id} </a>
+			<input defaultValue={todo.id} className="form-control w-25 float-start"
+				onChange={(e) => setTodo({ ...todo, id: e.target.value })} />
+			<input className="form-checkbox" id="wd-assignment-completed"
+				type="checkbox" checked={todo.completed} onChange={(e) =>
+					setTodo({ ...todo, completed: e.target.checked })} />
+			
+			<br /><br /><hr />
 
 		</div>
 	);

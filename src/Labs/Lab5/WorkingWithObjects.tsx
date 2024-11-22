@@ -42,7 +42,7 @@ export default function WorkingWithObjects() {
 			<a id="wd-update-assignment-completed"
 				className="btn btn-primary float-end"
 				href={`${ASSIGNMENT_API_URL}/completed/${assignment.completed}`}>
-					Update Score
+					Update completed
 				</a>
 			<input className="form-checkbox" id="wd-assignment-completed"
 				type="checkbox"
