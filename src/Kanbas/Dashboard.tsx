@@ -38,7 +38,7 @@ export default function Dashboard({
   }, [enrollments, currentUser._id]);
   const handleEnrollClick = async (courseId: string) => {
     try {
-      console.log("Attempting to enroll in:", courseId);
+      // console.log("Attempting to enroll in:", courseId);
       await enrollInCourse(currentUser._id, courseId);
       dispatch(enrollCourse({ user: currentUser._id, course: courseId }));
       // console.log("Enrollment successful");
