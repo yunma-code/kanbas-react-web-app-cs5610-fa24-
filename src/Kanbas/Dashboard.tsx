@@ -49,7 +49,7 @@ export default function Dashboard({
 
   const handleUnenrollClick = async (courseId: string) => {
     try {
-      console.log("Attempting to unenroll from:", courseId);
+      // console.log("Attempting to unenroll from:", courseId);
       await unenrollFromCourse(currentUser._id, courseId);
       dispatch(unenrollCourse({ user: currentUser._id, course: courseId }));
       // console.log("Unenrollment successful");
