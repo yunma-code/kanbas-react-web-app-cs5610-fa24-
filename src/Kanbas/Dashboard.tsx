@@ -36,13 +36,12 @@ export default function Dashboard({
       .filter((enrollment: any) => enrollment.user === currentUser._id)
       .map((enrollment: any) => enrollment.course);
   }, [enrollments, currentUser._id]);
-
   const handleEnrollClick = async (courseId: string) => {
     try {
       console.log("Attempting to enroll in:", courseId);
       await enrollInCourse(currentUser._id, courseId);
       dispatch(enrollCourse({ user: currentUser._id, course: courseId }));
-      console.log("Enrollment successful");
+      // console.log("Enrollment successful");
     } catch (err) {
       console.error("Failed to enroll:", err);
     }
@@ -53,7 +52,7 @@ export default function Dashboard({
       console.log("Attempting to unenroll from:", courseId);
       await unenrollFromCourse(currentUser._id, courseId);
       dispatch(unenrollCourse({ user: currentUser._id, course: courseId }));
-      console.log("Unenrollment successful");
+      // console.log("Unenrollment successful");
     } catch (err) {
       console.error("Failed to unenroll:", err);
     }
