@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import * as db from "./Database";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { enrollCourse, unenrollCourse } from "./reducer";
 import { useDispatch } from "react-redux";
+import { enrollInCourse, unenrollFromCourse } from "./client";
 
 export default function Dashboard({
   courses,
@@ -31,22 +31,32 @@ export default function Dashboard({
   const isFaculty = userRole === "FACULTY";
   const isStudent = userRole === "STUDENT";
 
-  // Get all enrolled course IDs for the current user
-  const enrolledCourseIds = enrollments
-    .filter((enrollment: any) => enrollment.user === currentUser._id)
-    .map((enrollment: any) => enrollment.course);
+  const enrolledCourseIds = useMemo(() => {
+    return enrollments
+      .filter((enrollment: any) => enrollment.user === currentUser._id)
+      .map((enrollment: any) => enrollment.course);
+  }, [enrollments, currentUser._id]);
 
-  // Show all courses or only enrolled courses based on the toggle
-  const filteredCourses = showAllCourses
-    ? courses
-    : courses.filter((course) => enrolledCourseIds.includes(course._id));
-
-  const handleEnrollClick = (courseId: string) => {
-    dispatch(enrollCourse({ user: currentUser._id, course: courseId }));
+  const handleEnrollClick = async (courseId: string) => {
+    try {
+      console.log("Attempting to enroll in:", courseId);
+      await enrollInCourse(currentUser._id, courseId);
+      dispatch(enrollCourse({ user: currentUser._id, course: courseId }));
+      console.log("Enrollment successful");
+    } catch (err) {
+      console.error("Failed to enroll:", err);
+    }
   };
 
-  const handleUnenrollClick = (courseId: string) => {
-    dispatch(unenrollCourse({ user: currentUser._id, course: courseId }));
+  const handleUnenrollClick = async (courseId: string) => {
+    try {
+      console.log("Attempting to unenroll from:", courseId);
+      await unenrollFromCourse(currentUser._id, courseId);
+      dispatch(unenrollCourse({ user: currentUser._id, course: courseId }));
+      console.log("Unenrollment successful");
+    } catch (err) {
+      console.error("Failed to unenroll:", err);
+    }
   };
 
   return (
@@ -55,7 +65,6 @@ export default function Dashboard({
       <hr />
       {isFaculty && (
         <>
-          {/* Add title and addNewCourse button */}
           <h5>
             New Course
             <button
@@ -85,7 +94,6 @@ export default function Dashboard({
             onChange={(e) => setCourse({ ...course, description: e.target.value })}
           />
           <hr />
-          {/* Published courses */}
           <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>
           <hr />
         </>
@@ -99,95 +107,89 @@ export default function Dashboard({
 
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-          {filteredCourses.map((course) => (
+          {courses.map((course) => (
             <div className="wd-dashboard-course col" style={{ width: "300px" }} key={course._id}>
               <div className="card rounded-3 overflow-hidden">
-                <Link
-                  to={
-                    isFaculty || enrolledCourseIds.includes(course._id)
-                      ? `/Kanbas/Courses/${course._id}/Home`
-                      : "#"
-                  }
-                  className="wd-dashboard-course-link text-decoration-none text-dark"
-                  onClick={(e) => {
-                    if (isStudent && !enrolledCourseIds.includes(course._id)) {
-                      e.preventDefault(); // Prevent navigation if student is not enrolled
-                    }
-                  }}
-                >
-                  <img src={course.img} alt={course.name} width="100%" height={160} />
-                  <div className="card-body">
-                    <h5 className="wd-dashboard-course-title card-title">{course.name}</h5>
-                    <p
-                      className="wd-dashboard-course-title card-text overflow-y-hidden"
-                      style={{ maxHeight: 100 }}
-                    >
-                      {course.description}
-                    </p>
+                {/* Course Image and Details */}
+                <img src={course.img} alt={course.name} width="100%" height={160} />
+                <div className="card-body">
+                  <h5 className="wd-dashboard-course-title card-title">{course.name}</h5>
+                  <p
+                    className="wd-dashboard-course-title card-text overflow-y-hidden"
+                    style={{ maxHeight: 100 }}
+                  >
+                    {course.description}
+                  </p>
 
+                  {/* Go Button */}
+                  <Link
+                    to={
+                      isFaculty || enrolledCourseIds.includes(course._id)
+                        ? `/Kanbas/Courses/${course._id}/Home`
+                        : "#"
+                    }
+                    className="btn btn-primary"
+                    onClick={(e) => {
+                      if (isStudent && !enrolledCourseIds.includes(course._id)) {
+                        e.preventDefault();
+                        alert("must enroll to access");
+                      }
+                    }}
+                  >
+                    Go
+                  </Link>
+
+                  {/* Enrollment and Unenrollment Buttons */}
+                  {isStudent && enrolledCourseIds.includes(course._id) ? (
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-danger float-end"
                       onClick={(e) => {
-                        if (isStudent && !enrolledCourseIds.includes(course._id)) {
-                          e.preventDefault();
-                        }
+                        e.preventDefault();
+                        handleUnenrollClick(course._id);
                       }}
                     >
-                      Go
+                      Unenroll
                     </button>
-
-                    {/* Enrollment and Unenrollment for students */}
-                    {isStudent && enrolledCourseIds.includes(course._id) ? (
+                  ) : (
+                    isStudent && (
                       <button
-                        className="btn btn-danger float-end"
+                        className="btn btn-success"
                         onClick={(e) => {
                           e.preventDefault();
-                          handleUnenrollClick(course._id);
+                          handleEnrollClick(course._id);
                         }}
                       >
-                        Unenroll
+                        Enroll
                       </button>
-                    ) : (
-                      isStudent && (
-                        <button
-                          className="btn btn-success"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleEnrollClick(course._id);
-                          }}
-                        >
-                          Enroll
-                        </button>
-                      )
-                    )}
+                    )
+                  )}
 
-                    {/* Edit and delete buttons only visible to faculty */}
-                    {isFaculty && (
-                      <>
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            deleteCourse(course._id);
-                          }}
-                          className="btn btn-danger float-end"
-                          id="wd-delete-course-click"
-                        >
-                          Delete
-                        </button>
-                        <button
-                          id="wd-edit-course-click"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            setCourse(course);
-                          }}
-                          className="btn btn-warning me-2 float-end"
-                        >
-                          Edit
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </Link>
+                  {/* Edit and Delete Buttons for Faculty */}
+                  {isFaculty && (
+                    <>
+                      <button
+                        onClick={(event) => {
+                          event.preventDefault();
+                          deleteCourse(course._id);
+                        }}
+                        className="btn btn-danger float-end"
+                        id="wd-delete-course-click"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        id="wd-edit-course-click"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setCourse(course);
+                        }}
+                        className="btn btn-warning me-2 float-end"
+                      >
+                        Edit
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -196,88 +198,3 @@ export default function Dashboard({
     </div>
   );
 }
-
-          // {/* course 2 */}
-          // <div className="wd-dashboard-course col" style={{ width: "300px" }} key="course2">
-          //   <div className="card rounded-3 overflow-hidden">
-          //     <Link className="wd-dashboard-course-link text-decoration-none text-dark" to="/Kanbas/Courses/1234/Home">
-          //       <img src="/images/css.png" width="100%" height={160} alt="CSS" />
-          //       <div className="card-body">
-          //         <h5 className="wd-dashboard-course-title card-title">CS1110 CSS</h5>
-          //         <p className="card-text">Full Stack software developer</p>
-          //         <button className="btn btn-primary"> Go </button>
-          //       </div>
-          //     </Link>
-          //   </div>
-          // </div>
-
-          // {/* course 3 */}
-          // <div className="wd-dashboard-course col" style={{ width: "300px" }} key="course3">
-          //   <div className="card rounded-3 overflow-hidden">
-          //     <Link className="wd-dashboard-course-link text-decoration-none text-dark" to="/Kanbas/Courses/1234/Home">
-          //       <img src="/images/js.png" width="100%" height={160} alt="JavaScript" />
-          //       <div className="card-body">
-          //         <h5 className="wd-dashboard-course-title card-title">CS1120 JavaScript</h5>
-          //         <p className="card-text">Full Stack software developer</p>
-          //         <button className="btn btn-primary"> Go </button>
-          //       </div>
-          //     </Link>
-          //   </div>
-          // </div>
-
-          // {/* course 4 */}
-          // <div className="wd-dashboard-course col" style={{ width: "300px" }} key="course4">
-          //   <div className="card rounded-3 overflow-hidden">
-          //     <Link className="wd-dashboard-course-link text-decoration-none text-dark" to="/Kanbas/Courses/1234/Home">
-          //       <img src="/images/cpp.png" width="100%" height={160} alt="C++ Foundation" />
-          //       <div className="card-body">
-          //         <h5 className="wd-dashboard-course-title card-title">CS1130 C++ Foundation</h5>
-          //         <p className="card-text">Full Stack software developer</p>
-          //         <button className="btn btn-primary"> Go </button>
-          //       </div>
-          //     </Link>
-          //   </div>
-          // </div>
-
-          // {/* course 5 */}
-          // <div className="wd-dashboard-course col" style={{ width: "300px" }} key="course5">
-          //   <div className="card rounded-3 overflow-hidden">
-          //     <Link className="wd-dashboard-course-link text-decoration-none text-dark" to="/Kanbas/Courses/1234/Home">
-          //       <img src="/images/sql.png" width="100%" height={160} alt="SQL" />
-          //       <div className="card-body">
-          //         <h5 className="wd-dashboard-course-title card-title">CS1140 SQL</h5>
-          //         <p className="card-text">Full Stack software developer</p>
-          //         <button className="btn btn-primary"> Go </button>
-          //       </div>
-          //     </Link>
-          //   </div>
-          // </div>
-
-          // {/* course 6 */}
-          // <div className="wd-dashboard-course col" style={{ width: "300px" }} key="course6">
-          //   <div className="card rounded-3 overflow-hidden">
-          //     <Link className="wd-dashboard-course-link text-decoration-none text-dark" to="/Kanbas/Courses/1234/Home">
-          //       <img src="/images/python.png" width="100%" height={160} alt="Python" />
-          //       <div className="card-body">
-          //         <h5 className="wd-dashboard-course-title card-title">CS1150 Python</h5>
-          //         <p className="card-text">Full Stack software developer</p>
-          //         <button className="btn btn-primary"> Go </button>
-          //       </div>
-          //     </Link>
-          //   </div>
-          // </div>
-
-          // {/* course 7 */}
-          // <div className="wd-dashboard-course col" style={{ width: "300px" }} key="course7">
-          //   <div className="card rounded-3 overflow-hidden">
-          //     <Link className="wd-dashboard-course-link text-decoration-none text-dark" to="/Kanbas/Courses/1234/Home">
-          //       <img src="/images/java.png" width="100%" height={160} alt="Java" />
-          //       <div className="card-body">
-          //         <h5 className="wd-dashboard-course-title card-title">CS1160 Java</h5>
-          //         <p className="card-text">Full Stack software developer</p>
-          //         <button className="btn btn-primary"> Go </button>
-          //       </div>
-          //     </Link>
-          //   </div>
-          // </div>
-   

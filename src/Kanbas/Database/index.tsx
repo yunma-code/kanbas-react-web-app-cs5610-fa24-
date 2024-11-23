@@ -1,6 +1,6 @@
-import courses from "./courses.json";
-import modules from "./modules.json";
-import assignments from "./assignments.json";
-import enrollments from "./enrollments.json";
-import users from "./users.json";
+import courses from "./courses.js"
+import modules from "./modules.js";
+import assignments from "./assignments";
+import enrollments from "./enrollments";
+import users from "./users.js";
 export { courses, modules, assignments, enrollments, users};

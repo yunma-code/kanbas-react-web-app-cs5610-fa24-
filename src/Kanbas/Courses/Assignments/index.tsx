@@ -7,10 +7,12 @@ import { GrDocument } from "react-icons/gr";
 import AssignmentControls from "./AssignmentControls";
 import GreenCheckmark from "../Modules/GreenCheckmark";
 import * as db from "../../Database";
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addAssignment, deleteAssignment, updateAssignment } from "./reducer";
+import * as assignmentsClient from "./client";
+import { fetchAssignment } from "../../../Labs/Lab5/client";
 
 export default function Assignments() {
   const { cid } = useParams();
@@ -28,10 +30,22 @@ export default function Assignments() {
   const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
 
   // user role
-	const { currentUser } = useSelector((state: any) => state.accountReducer);
+	const { currentUser } = useSelector((state: any) => state.accountReducer.currentUser);
 	// const user = db.users.find((user: any) => user.username === currentUser?.username);
 	// const userRole = user ? user.role : null;
   const userRole = currentUser?.role;
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      if (cid) {
+        const fetchedAssignments = await assignmentsClient.getAssignmentsByCourseId(cid);
+        fetchedAssignments.forEach((assignment: any) => {
+          dispatch(addAssignment(assignment));
+        });
+      }
+    };
+    fetchAssignments();
+  }, [cid, dispatch]);
 
   const handleAddAssignmentClick = () => {
     navigate(`/Kanbas/Courses/${cid}/Assignments/Editor/NewAssignment`); 
@@ -41,8 +55,9 @@ export default function Assignments() {
     setShowConfirmDialog(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (assignmentToDelete) {
+      await assignmentsClient.deleteAssignment(assignmentToDelete);
       dispatch(deleteAssignment(assignmentToDelete));
       setAssignmentToDelete(null);
     }

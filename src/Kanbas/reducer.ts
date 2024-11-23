@@ -1,9 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
-import enrollmentsData from "./Database/enrollments.json";
+import enrollmentsData from "./Database/enrollments";
 
 const loadEnrollments = () => {
   const storedEnrollments = localStorage.getItem("enrollments");
   return storedEnrollments ? JSON.parse(storedEnrollments) : enrollmentsData;
+};
+
+const saveEnrollments = (enrollments: any[]) => {
+  localStorage.setItem("enrollments", JSON.stringify(enrollments));
 };
 
 const initialState = {
@@ -24,7 +28,7 @@ const enrollmentSlice = createSlice({
       state.enrollments = state.enrollments.filter(
         (enrollment: { user: any; course: any; }) => !(enrollment.user === user && enrollment.course === course)
       );
-      localStorage.setItem("enrollments", JSON.stringify(state.enrollments));
+      saveEnrollments(state.enrollments);
     },
   },
 });

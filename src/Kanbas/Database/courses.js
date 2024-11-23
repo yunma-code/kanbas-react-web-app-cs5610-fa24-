@@ -1,3 +1,4 @@
+export default 
 [
   {
     "_id": "RS101",

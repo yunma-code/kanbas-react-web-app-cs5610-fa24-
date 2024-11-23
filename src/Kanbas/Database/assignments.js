@@ -1,4 +1,4 @@
-[
+export default [
   { "_id": "A101", "title": "Propulsion Assignment", "course": "RS101", "name": "Propulsion Assignment", "description": "", "points": "100", "dueDate": "09-02-2024", "available_from_date": "09-02-2024", "available_until_date": "09-04-2024" },
   { "_id": "A102", "title": "Combustion Analysis", "course": "RS101", "name": "", "description": "", "points": "120", "dueDate": "09-02-2024", "available_from_date": "09-02-2024", "available_until_date": "09-04-2024"  },
   { "_id": "A103", "title": "Nozzle Design Project", "course": "RS101", "name": "", "description": "", "points": "30", "dueDate": "09-02-2024", "available_from_date": "09-02-2024", "available_until_date": "09-04-2024"},

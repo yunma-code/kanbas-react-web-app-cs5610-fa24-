@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "./reducer";
 import * as db from "../../Database";
+import { createAssignment, updateAssignment as updateAssignmentAPI, getAssignmentById } from "./client";
 
 export default function AssignmentEditor() {
   const { assignmentId, cid } = useParams();
@@ -24,29 +25,25 @@ export default function AssignmentEditor() {
   const [available_until_date, setAvailableUntil] = useState("");
 
   useEffect(() => {
-    // editing existing assignment
-    if (assignmentId && assignmentData) {
-      setTitle(assignmentData.title);
-      setDescription(assignmentData.description);
-      setPoints(assignmentData.points);
-      setDueDate(assignmentData.dueDate);
-      setAvailableFrom(assignmentData.available_from_date);
-      setAvailableUntil(assignmentData.available_until_date);
-    } else {
-      // new assignment
-      setTitle("");
-      setDescription("");
-      setPoints(100);
-      setDueDate("");
-      setAvailableFrom("");
-      setAvailableUntil("");
+    if (assignmentId) {
+      (async () => {
+        const data = await getAssignmentById(assignmentId);
+        if (data) {
+          setTitle(data.title);
+          setDescription(data.description);
+          setPoints(data.points);
+          setDueDate(data.dueDate);
+          setAvailableFrom(data.available_from_date);
+          setAvailableUntil(data.available_until_date);
+        }
+      })();
     }
-  }, [assignmentId, assignmentData]);
+  }, [assignmentId]);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newAssignment = {
+    const assignment = {
       _id: assignmentId || new Date().getTime().toString(),
       title,
       description,
@@ -59,9 +56,13 @@ export default function AssignmentEditor() {
 
     if (assignmentId) {
       //update existing assignment
-      dispatch(updateAssignment(newAssignment)); 
-    } 
-    dispatch(addAssignment(newAssignment));
+      const updatedAssignment = await updateAssignmentAPI(assignmentId, assignment);
+      dispatch(updateAssignment(updatedAssignment)); 
+    } else {
+      const newAssignment = await createAssignment(assignment);
+      dispatch(addAssignment(newAssignment));
+    }
+    
     navigate(`/Kanbas/Courses/${cid}/Assignments`); //navigate
       
   };
