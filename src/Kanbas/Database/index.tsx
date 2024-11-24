@@ -3,4 +3,5 @@ import modules from "./modules.js";
 import assignments from "./assignments";
 import enrollments from "./enrollments";
 import users from "./users.js";
-export { courses, modules, assignments, enrollments, users};
+import quizzes from "./quizzes.json"
+export { courses, modules, assignments, enrollments, users, quizzes};
