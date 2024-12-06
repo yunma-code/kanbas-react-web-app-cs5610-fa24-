@@ -20,6 +20,7 @@ export default function CoursesNavigation() {
       {links.map((link) => {
         const path = `/Kanbas/Courses/${cid}/${link}`;
         const isActive = location.pathname.startsWith(path) ? "active" : "text-danger";
+        
 
         return (
           <Link

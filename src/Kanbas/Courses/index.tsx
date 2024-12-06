@@ -6,7 +6,9 @@ import AssignmentEditor from "./Assignments/Editor";
 import { Navigate, Route, Routes, useParams, useLocation } from "react-router";
 import { FaAlignJustify } from "react-icons/fa";
 import PeopleTable from "./People/Table";
-import QuizModel from "./Quizzes";
+import Quizzes from "./Quizzes";
+import QuizzesPreview from "./Quizzes/QuizzesPreview";
+import SubmitScreen from "./Quizzes/QuizzesPreview/SubmitScreen";
 
 export default function Courses({courses }: { courses: any[]; }) {
   const { cid } = useParams();
@@ -34,8 +36,9 @@ export default function Courses({courses }: { courses: any[]; }) {
             <Route path="Assignments/Editor/:assignmentId" element={<AssignmentEditor />} />
             <Route path="/Kanbas/Courses/:cid/Assignments/Editor/:assignmentId" element={<AssignmentEditor />} />
             <Route path="People" element={<PeopleTable />} />
-            <Route path="Quizzes" element={<QuizModel />} />
-            <Route path="Quizzes/:quizId" element={<QuizModel />} />
+            <Route path="Quizzes" element={<Quizzes />} />
+            <Route path="Quizzes/preview/:quizId" element={<QuizzesPreview />} />
+            <Route path="Quizzes/Submit" element={<SubmitScreen />} />
           </Routes>
         </div></div>
 		</div>
