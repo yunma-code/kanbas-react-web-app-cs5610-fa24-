@@ -4,6 +4,11 @@ export const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
 export const USERS_API = `${REMOTE_SERVER}/api/users`;
 
 export const signin = async (credentials: any) => {
+  console.log("Sending request to signin API...");
+  console.log("Request URL:", `${USERS_API}/signin`);
+  console.log("Request headers:", axiosWithCredentials.defaults.headers);
+  console.log("Request payload:", credentials);
+  
   const response = await axiosWithCredentials.post( `${USERS_API}/signin`, credentials );
   return response.data;
 };
