@@ -33,7 +33,7 @@ export default function Dashboard({
 
   const enrolledCourseIds = useMemo(() => {
     return enrollments
-      .filter((enrollment: any) => enrollment.user === currentUser._id)
+      // .filter((enrollment: any) => enrollment.user === currentUser._id)
       .map((enrollment: any) => enrollment.course);
   }, [enrollments, currentUser._id]);
   const handleEnrollClick = async (courseId: string) => {
