@@ -24,8 +24,17 @@ export default function Modules() {
     await modulesClient.deleteModule(moduleId);
     dispatch(deleteModule(moduleId));
   };
+
+  const createModuleForCourse = async () => {
+    if(!cid) return;
+    const newModule = { name: moduleName, course: cid };
+    const module = await coursesClient.createModuleForCourse(cid, newModule);
+    dispatch(addModule(module));
+  };
+
   const fetchModules = async () => {
     const modules = await coursesClient.findModulesForCourse(cid as string);
+    console.log("Fetched modules: ", modules);
     dispatch(setModules(modules));
   };
   useEffect(() => {
@@ -51,12 +60,7 @@ export default function Modules() {
   //   setModules(modules.map((m) => (m._id === module._id ? module : m)));
   // };
 
-  const createModuleForCourse = async () => {
-    if(!cid) return;
-    const newModule = { name: moduleName, course: cid };
-    const module = await coursesClient.createModuleForCourse(cid, newModule);
-    dispatch(addModule(module));
-  };
+
   return (
     <div className="wd-modules">
       <ModulesControls setModuleName={setModuleName} 
@@ -86,8 +90,7 @@ export default function Modules() {
             {userRole === "FACULTY" && (
               <ModuleControlButtons
                 moduleId={module._id}
-                deleteModule={(moduleId) => {
-                  dispatch(deleteModule(moduleId));}}
+                deleteModule={(moduleId) => removeModule(moduleId)}
                 editModule={(moduleId) => dispatch(editModule(module._id))}
              />
              )}
