@@ -13,7 +13,9 @@ export default function AssignmentControls() {
   const { cid } = useParams();
   const navigate = useNavigate();
   const handleAddAssignmentClick = () => {
-    navigate(`/Kanbas/Courses/${cid}/Assignments/Editor/NewAssignment`); 
+    if(cid) {
+      navigate(`/Kanbas/Courses/${cid}/Assignments/Editor/NewAssignment`); 
+    }
   };
   
   return (
