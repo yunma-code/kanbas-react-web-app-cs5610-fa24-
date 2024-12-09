@@ -33,11 +33,9 @@ export default function TOC() {
 				<a id="wd-k" href="https://github.com/yunma-code/kanbas-node-server-app" className="nav-link">
 					Server Github Repo</a></li>
 			<li className="nav-item">
-				<a id="wd-k" href="https://kanbas-node-server-app-go4j.onrender.com/" className="nav-link">
+				<a id="wd-k" href="https://kanbas-node-server-app-a6-g1mh.onrender.com" className="nav-link">
 					Render</a></li>
-			<li className="nav-item">
-				<a id="wd-k" href="https://kanbas-node-server-app-ym-669cbc84b414.herokuapp.com/" className="nav-link">
-					Heroku</a></li>
+			
 			
 			
 		</ul>
